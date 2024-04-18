@@ -7,5 +7,5 @@ edition = "2021"
 
 [dependencies]
 chess_library = { path = "../chess_library" }
-
+rand = "0.8.5"
 
