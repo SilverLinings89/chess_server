@@ -60,6 +60,43 @@ enum RequestType {
     none,
 }
 
+struct Request {
+    request_type: RequestType,
+    id: String,
+    data: String,
+}
+
+impl Request {
+    fn new() -> Self {
+        Request {
+            request_type: RequestType::none,
+            data: "".to_string(),
+            id: "".to_string(),
+        }
+    }
+}
+
+fn parse_get_request(line: String) -> Request {
+    let parts: Vec<&str> = line.split_whitespace().collect();
+    if parts[0] != "GET" || parts.len() < 2 {
+        return Request::new();
+    } else {
+        let route = parts[1];
+        let route_parts: Vec<&str> = route.split('/').collect();
+        let rt: RequestType = match route_parts[1] {
+            "newGame" => RequestType::newGame,
+            "joinWhite" => RequestType::joinWhite,
+            "joinBlack" => RequestType::joinBlack,
+            "submitMove" => RequestType::submitMove,
+            "getPosition" => RequestType::getPosition,
+            _ => RequestType::none,
+        };
+        let mut ret: Request = Request::new();
+        ret.request_type = rt;
+        return ret;
+    }
+}
+
 fn handle_connection(mut stream: TcpStream, sessions: &mut Vec<GameSession>) {
     let buf_reader = BufReader::new(&mut stream);
     let http_request: Vec<_> = buf_reader
